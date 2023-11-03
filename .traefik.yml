@@ -1,12 +1,7 @@
-displayName: Demo Plugin
+displayName: Host Header
 type: middleware
 iconPath: .assets/icon.png
 
-import: github.com/traefik/plugindemo
+import: github.com/dzungmmp/host-header-plugin
 
-summary: '[Demo] Add Request Header'
-
-testData:
-  Headers:
-    X-Demo: test
-    X-URL: '{{URL}}'
+summary: "Transform some headers with some other ones, see https://github.com/traefik/traefik/issues/6047"
