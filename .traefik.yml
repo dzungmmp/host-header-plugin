@@ -5,3 +5,10 @@ iconPath: .assets/icon.png
 import: github.com/dzungmmp/host-header-plugin
 
 summary: "Transform some headers with some other ones, see https://github.com/traefik/traefik/issues/6047"
+
+# Configuration data for your plugin.
+# This is mandatory,
+# and Plugins Catalog will try to execute the plugin with the data you provide as part of its startup validity tests.
+testData:
+  Headers:
+    Foo: Bar
