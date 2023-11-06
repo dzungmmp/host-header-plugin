@@ -14,8 +14,8 @@ services:
       - --providers.docker=true
 
       - --api=true
-      - --experimental.plugins.host-header-plugin.moduleName=github.com/dzungmmp/host-header-plugin
-      - --experimental.plugins.host-header-plugin.version=v0.0.1
+      - --experimental.plugins.hostHeaderPlugin.moduleName=github.com/dzungmmp/host-header-plugin
+      - --experimental.plugins.host-header-plugin.version=v0.0.2
 
       # LetsEncrypt Staging Server - uncomment when testing
       # - --certificatesResolvers.letsencrypt.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory
@@ -54,13 +54,13 @@ services:
     networks:
       traefik:
     labels:
-      - traefik.http.routers.http.middlewares=whoami-https,testheader
+      - traefik.http.routers.http.middlewares=whoami-https,host-header
       - traefik.http.routers.https.rule=Host(`${DOMAIN}`)
       - traefik.http.routers.https.entrypoints=https
       - traefik.http.routers.https.tls=true
       - traefik.http.routers.https.tls.certresolver=${CERT_RESOLVER}
       - traefik.http.middlewares.whoami-https.redirectscheme.scheme=https
       - traefik.http.middlewares.whoami-https.redirectscheme.permanent=true
-      - traefik.http.middlewares.testheader.host-header-plugin.headers=
+      - traefik.http.middlewares.host-header.hostHeaderPlugin.headers.test=
 networks:
   traefik:

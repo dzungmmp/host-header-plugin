@@ -1,15 +1,14 @@
 // Package plugindemo a demo plugin.
-package plugindemo
+package host_header_plugin
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 )
 
 // Config the plugin configuration.
 type Config struct {
-	Headers map[string]string `json:"headers,omitempty"`
+	Headers map[string]string `json:"headers"`
 }
 
 // CreateConfig creates the default plugin configuration.
@@ -28,9 +27,9 @@ type Demo struct {
 
 // New created a new Demo plugin.
 func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
-	if len(config.Headers) == 0 {
-		return nil, fmt.Errorf("headers cannot be empty")
-	}
+	// if len(config.Headers) == 0 {
+	// 	return nil, fmt.Errorf("headers cannot be empty")
+	// }
 
 	return &Demo{
 		headers: config.Headers,
