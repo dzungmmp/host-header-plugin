@@ -6,16 +6,18 @@ services:
       # Try to enable this if something isn't working.
       # Chances are, Traefik will tell you why.
       # Be careful in production as it exposes the traffic you might not want to expose.
-      #--log.level=DEBUG
+      - --log.level=INFO
+      # - --accesslog
 
       - --entrypoints.http.address=:80
       - --entrypoints.https.address=:443
 
       - --providers.docker=true
 
-      - --api=true
-      - --experimental.plugins.hostHeaderPlugin.moduleName=github.com/dzungmmp/host-header-plugin
-      - --experimental.plugins.host-header-plugin.version=v0.0.2
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --experimental.localPlugins.hostHeaderPlugin.moduleName=github.com/dzungmmp/host-header-plugin
+      # - --experimental.localplugins.hostHeaderPlugin.version=v0.0.3
 
       # LetsEncrypt Staging Server - uncomment when testing
       # - --certificatesResolvers.letsencrypt.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory
@@ -32,19 +34,21 @@ services:
 
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
       - traefik.http.routers.traefik.entrypoints=https
-      - traefik.http.routers.traefik.middlewares=auth
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=${CERT_RESOLVER}
 
       - traefik.http.middlewares.to-https.redirectscheme.scheme=https
-      - traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_USER}:${TRAEFIK_PASSWORD_HASH}
+
+      # - traefik.http.routers.traefik.middlewares=auth
+      # - traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_USER}:${TRAEFIK_PASSWORD_HASH}
     restart: always
     networks:
       traefik:
     ports:
       - 80:80
       - 443:443
+      - 8080:8080
     volumes:
       - ./data/letsencrypt:/letsencrypt
       - ./:/plugins-local/src/github.com/dzungmmp/host-header-plugin:ro
@@ -54,13 +58,19 @@ services:
     networks:
       traefik:
     labels:
-      - traefik.http.routers.http.middlewares=whoami-https,host-header
-      - traefik.http.routers.https.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.https.entrypoints=https
-      - traefik.http.routers.https.tls=true
-      - traefik.http.routers.https.tls.certresolver=${CERT_RESOLVER}
-      - traefik.http.middlewares.whoami-https.redirectscheme.scheme=https
-      - traefik.http.middlewares.whoami-https.redirectscheme.permanent=true
-      - traefik.http.middlewares.host-header.hostHeaderPlugin.headers.test=
+      - traefik.enable=true
+      - traefik.http.routers.http.middlewares=host-header
+      - traefik.http.routers.http.rule=(Host(`${DOMAIN}`) || Host(`whoami2.localhost`))
+
+      # - traefik.http.routers.https.rule=Host(`${DOMAIN}`)
+      # - traefik.http.routers.https.entrypoints=https
+      # - traefik.http.routers.https.tls=true
+      # - traefik.http.routers.https.tls.certresolver=${CERT_RESOLVER}
+      # - traefik.http.middlewares.whoami-https.redirectscheme.scheme=https
+      # - traefik.http.middlewares.whoami-https.redirectscheme.permanent=true
+
+      - traefik.http.middlewares.host-header.plugin.hostHeaderPlugin.headers.X-Test=OK
+      - traefik.http.middlewares.host-header.plugin.hostHeaderPlugin.headers.X-Demo-Header=OK
+      - traefik.http.middlewares.host-header.plugin.hostHeaderPlugin.allowed_hosts[0]=whoami.localhost
 networks:
   traefik:
